@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>清单革命 Manifest — 把今天要做的事，变成一张清单</title>
+<meta name="description" content="清单革命（Manifest）是一款为 Mac、iPhone 和 iPad 设计的待办清单：今天、关键事项、一句话记待办、桌面浮层与云同步。">
+<meta name="theme-color" content="#FAF9F5">
+<meta property="og:title" content="清单革命 Manifest">
+<meta property="og:description" content="把今天要做的事，变成一张清单。为 Mac、iPhone 和 iPad 设计。">
+<meta property="og:image" content="assets/icon-256.png">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon-256.png">
+<style>
+:root{
+  --ivory:#FAF9F5; --paper:#F3F1EA; --white:#FFFFFF; --slate:#141413; --clay:#D97757; --clay-deep:#BE5B3C;
+  --clay-soft:#E5A68A; --clay-pale:#F2D5C8;
+  --gray700:#3D3D3A; --gray550:#73726C; --gray500:#87867F; --gray450:#B0AEA5; --gray300:#D1CFC5; --gray200:#E8E6DC;
+  --hair:rgba(31,30,29,.13); --hair-strong:rgba(31,30,29,.28);
+  --clay-wash:rgba(217,119,87,.10); --work:#4977A2; --work-wash:rgba(73,119,162,.14);
+  --serif: Georgia, "Times New Roman", "Songti SC", "Source Han Serif SC", "Noto Serif SC", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ease: cubic-bezier(.2,0,0,1); --spring: cubic-bezier(.34,.9,.24,1);
+  --shadow-win: 0 1px 1px rgba(20,19,17,.04), 0 12px 32px rgba(20,19,17,.08), 0 40px 80px -20px rgba(20,19,17,.16);
+  --shadow-card: 0 1px 2px rgba(20,19,17,.04), 0 6px 16px rgba(20,19,17,.05);
+  --wrap: 1120px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--ivory);color:var(--slate);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:hidden;overflow-x:clip}
+html{overflow-x:clip}
+img{max-width:100%;display:block}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--clay);outline-offset:3px;border-radius:6px}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+.serif{font-family:var(--serif)}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--clay-deep)}
+h1,h2,h3{font-family:var(--serif);font-weight:400;letter-spacing:-.01em;margin:0}
+h2{font-size:clamp(30px,4.2vw,46px);line-height:1.18}
+.lede{font-size:18px;color:var(--gray700);max-width:36em}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:20;background:rgba(250,249,245,.82);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid transparent;transition:border-color .2s}
+.nav.scrolled{border-bottom-color:var(--hair)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;font-size:16px}
+.brand img{width:30px;height:30px}
+.brand small{font-weight:400;color:var(--gray550);font-size:14px}
+.nav-links{display:flex;align-items:center;gap:6px}
+.nav-links a{text-decoration:none;font-size:14px;color:var(--gray700);padding:8px 12px;border-radius:999px;transition:background .15s}
+.nav-links a:hover{background:rgba(115,114,108,.10)}
+.nav-links a.btn-dark{color:var(--ivory)}.nav-links a.btn-dark:hover{background:#2a2926}
+.lang{border:none;background:none;font-size:13px;padding:7px 10px;border-radius:999px;color:var(--gray550);box-shadow:inset 0 0 0 1px var(--hair)}
+.lang:hover{color:var(--slate)}
+.btn{display:inline-flex;align-items:center;gap:9px;border:none;text-decoration:none;font-size:15px;font-weight:500;border-radius:999px;padding:13px 22px;transition:transform .12s var(--ease),background .15s,box-shadow .15s}
+.btn:active{transform:scale(.97)}
+.btn-dark{background:var(--slate);color:var(--ivory)}
+.btn-dark:hover{background:#2a2926}
+.btn-ghost{background:transparent;color:var(--slate);box-shadow:inset 0 0 0 1px var(--hair-strong)}
+.btn-ghost:hover{background:rgba(115,114,108,.08)}
+.btn svg{width:17px;height:17px}
+.nav .btn{padding:8px 16px;font-size:14px}
+
+/* hero */
+.hero{padding:72px 0 40px;text-align:center}
+.hero-icon{width:84px;height:84px;margin:0 auto 26px;filter:drop-shadow(0 10px 20px rgba(20,19,17,.10))}
+.hero h1{font-size:clamp(40px,6.4vw,76px);line-height:1.08;max-width:12em;margin:0 auto}
+.hero h1 em{font-style:normal;color:var(--clay)}
+.hero .lede{margin:22px auto 0;text-align:center}
+.cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:34px}
+.cta-note{margin-top:14px;font-size:13px;color:var(--gray550)}
+
+/* demo window */
+.stage{position:relative;margin:56px auto 0;max-width:980px}
+.stage::before{content:"";position:absolute;inset:8% -6% -10%;background:radial-gradient(60% 60% at 50% 40%,rgba(217,119,87,.16),transparent 70%);z-index:-1;filter:blur(10px)}
+.win{background:var(--ivory);border-radius:14px;box-shadow:var(--shadow-win),0 0 0 1px rgba(20,19,17,.08);overflow:hidden;text-align:left;display:flex;height:540px}
+.win-side{width:220px;flex:0 0 auto;border-right:1px solid var(--hair);padding:14px 14px 18px;display:flex;flex-direction:column;gap:20px;background:rgba(243,241,234,.6)}
+.lights{display:flex;gap:8px;padding:2px 4px 6px}
+.lights i{width:12px;height:12px;border-radius:50%;background:#E0DED6;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.08)}
+.lights i:nth-child(1){background:#F16A5F}.lights i:nth-child(2){background:#F6BE4F}.lights i:nth-child(3){background:#5FC454}
+.side-brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;padding:0 6px}
+.side-brand svg{width:18px;height:18px;color:var(--clay)}
+.side-nav{display:flex;flex-direction:column;gap:2px}
+.side-nav div{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--gray700);padding:8px 10px;border-radius:9px}
+.side-nav div svg{width:15px;height:15px;color:var(--gray500)}
+.side-nav div span:last-child{margin-left:auto;font-size:12px;color:var(--gray500);font-variant-numeric:tabular-nums}
+.side-nav .on{background:var(--slate);color:var(--ivory);font-weight:500}
+.side-nav .on svg,.side-nav .on span:last-child{color:var(--ivory)}
+.mini-cal{padding:0 6px;font-size:11px;color:var(--gray550)}
+.mini-cal b{display:block;font-weight:500;color:var(--gray700);font-size:12px;margin-bottom:8px}
+.mini-cal .g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.mini-cal .g span{padding:4px 0;border-radius:6px;position:relative}
+.mini-cal .g .t{background:var(--slate);color:var(--ivory);font-weight:600}
+.mini-cal .g .k::after{content:"";position:absolute;left:50%;bottom:1px;width:3px;height:3px;margin-left:-1.5px;border-radius:50%;background:var(--clay)}
+.win-main{flex:1;min-width:0;padding:34px 40px 24px;overflow:hidden;display:flex;flex-direction:column}
+.day-title{font-family:var(--serif);font-size:30px;line-height:1.2}
+.day-title .num{display:inline-block;min-width:.6em;text-align:center;font-variant-numeric:tabular-nums}
+.day-sub{font-size:13px;color:var(--gray550);margin-top:4px}
+.add{margin-top:20px;display:flex;align-items:center;gap:10px;background:var(--white);border-radius:14px;padding:6px 6px 6px 16px;box-shadow:var(--shadow-card),0 0 0 1px rgba(20,19,17,.04)}
+.add input{flex:1;min-width:0;border:none;background:none;font:inherit;font-size:14.5px;padding:9px 0;outline:none;color:var(--slate)}
+.add input::placeholder{color:var(--gray450)}
+.add button{border:none;width:32px;height:32px;border-radius:10px;background:var(--gray200);display:grid;place-items:center;transition:background .15s}
+.add button.ready{background:var(--clay);color:var(--white)}
+.add button svg{width:15px;height:15px}
+.chips{display:flex;gap:6px;min-height:0;height:0;overflow:hidden;transition:height .22s var(--ease),margin .22s var(--ease)}
+.chips.show{height:26px;margin-top:10px}
+.chip{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--gray200);color:var(--gray700);white-space:nowrap}
+.chip.work{background:var(--work-wash);color:var(--work)}
+.chip.key{background:var(--clay-wash);color:var(--clay-deep)}
+.list{margin-top:14px;overflow-y:auto;overflow-x:hidden;flex:1;scrollbar-width:none;position:relative}
+.list::-webkit-scrollbar{display:none}
+.sec{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;color:var(--gray550);padding:14px 2px 6px}
+.sec.key{color:var(--clay-deep)}
+.sec svg{width:13px;height:13px}
+.row{display:flex;align-items:flex-start;gap:12px;padding:11px 8px;border-bottom:1px solid var(--hair);border-radius:0;position:relative;transition:background .08s}
+.row:hover{background:rgba(115,114,108,.06)}
+.row.fresh{animation:fresh 1.4s var(--ease)}
+@keyframes fresh{0%{background:var(--clay-wash);opacity:0;transform:translateY(-6px)}25%{opacity:1;transform:none}100%{background:transparent}}
+.chk{flex:0 0 auto;width:19px;height:19px;margin-top:1px;border-radius:6px;border:1.5px solid var(--gray300);background:var(--white);display:grid;place-items:center;padding:0;transition:background .14s,border-color .14s,transform .14s var(--spring)}
+.chk:hover{border-color:var(--gray500)}
+.chk:active{transform:scale(.88)}
+.chk svg{width:12px;height:12px;color:var(--white);stroke-dasharray:20;stroke-dashoffset:20;transition:stroke-dashoffset .22s var(--ease) .04s}
+.row.done .chk{background:var(--slate);border-color:var(--slate)}
+.row.done .chk svg{stroke-dashoffset:0}
+.row .body{flex:1;min-width:0}
+.row .ttl{font-size:14.5px;position:relative;display:inline}
+.row .ttl::after{content:"";position:absolute;left:0;right:0;top:55%;height:1.3px;background:var(--gray500);transform:scaleX(0);transform-origin:left;transition:transform .32s var(--ease) .06s}
+.row.done .ttl{color:var(--gray500)}
+.row.done .ttl::after{transform:scaleX(1)}
+.row.done.settled .ttl{text-decoration:line-through;text-decoration-color:var(--gray500)}
+.row.done.settled .ttl::after{display:none}
+.row .meta{display:flex;gap:6px;margin-top:5px}
+.row .meta:empty{display:none}
+.row .meta .chip{font-size:11px;padding:1px 7px}
+.empty{font-size:13px;color:var(--gray500);padding:18px 4px}
+.toast{position:absolute;left:50%;bottom:18px;transform:translate(-50%,12px);opacity:0;background:rgba(20,19,17,.86);color:var(--ivory);font-size:13px;border-radius:999px;padding:8px 8px 8px 16px;display:flex;gap:12px;align-items:center;pointer-events:none;transition:opacity .2s,transform .26s var(--spring);backdrop-filter:blur(10px)}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{background:rgba(255,255,255,.14);border:none;border-radius:999px;padding:3px 11px;font-size:12.5px;color:var(--ivory)}
+.win-main{position:relative}
+.hint{margin-top:18px;font-size:13px;color:var(--gray550);text-align:center}
+.hint kbd{font-family:var(--mono);font-size:12px;background:var(--white);border-radius:6px;padding:1px 6px;box-shadow:0 0 0 1px var(--hair)}
+
+/* manifesto */
+.manifesto{padding:120px 0 90px;text-align:center}
+.manifesto blockquote{margin:0 auto;font-family:var(--serif);font-size:clamp(24px,3.2vw,36px);line-height:1.45;max-width:24em}
+.manifesto blockquote em{font-style:normal;background:linear-gradient(transparent 62%,var(--clay-pale) 62%)}
+.manifesto p{color:var(--gray550);margin-top:22px;font-size:15px}
+
+/* feature blocks */
+section.feat{padding:90px 0}
+.split{display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:center}
+.split.rev .copy{order:2}
+.copy h2{margin-top:12px}
+.copy .lede{margin-top:18px}
+.bul{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:12px}
+.bul li{display:flex;gap:12px;font-size:15.5px;color:var(--gray700)}
+.bul li::before{content:"";flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:var(--clay);margin-top:9px}
+.bul code,.syntax code{font-family:var(--mono);font-size:13px;background:var(--white);padding:2px 7px;border-radius:6px;box-shadow:0 0 0 1px var(--hair);color:var(--slate)}
+.card{background:var(--white);border-radius:24px;box-shadow:var(--shadow-card),0 0 0 1px rgba(20,19,17,.04)}
+
+/* AI demo */
+.ai{padding:26px}
+.ai-in{display:flex;align-items:flex-start;gap:12px;background:var(--ivory);border-radius:14px;padding:14px 16px;min-height:76px;font-size:15px}
+.ai-in .spark{flex:0 0 auto;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--clay);color:var(--white);margin-top:-2px}
+.ai-in .spark svg{width:15px;height:15px}
+.ai-in .spark.busy{animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(.9);opacity:.7}}
+.caret{display:inline-block;width:1.5px;height:1.1em;background:var(--clay);vertical-align:-3px;margin-left:1px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.drafts{margin-top:16px;display:grid;gap:10px}
+.draft{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:14px;box-shadow:inset 0 0 0 1px var(--hair);opacity:0;transform:translateY(8px);transition:opacity .3s var(--ease),transform .4s var(--spring)}
+.draft.in{opacity:1;transform:none}
+.draft .chk{margin-top:2px;border-style:dashed}
+.draft b{font-weight:500;font-size:14.5px;display:block}
+.draft .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.ai-foot{display:flex;justify-content:space-between;align-items:center;margin-top:16px;font-size:13px;color:var(--gray550);opacity:0;transition:opacity .3s}
+.ai-foot.in{opacity:1}
+.ai-foot .btn{padding:8px 16px;font-size:13.5px}
+.replay{background:none;border:none;color:var(--gray550);font-size:13px;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+
+/* overlay demo */
+.desk{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:4/3.1;background:linear-gradient(160deg,#E9D3C3 0%,#D9B9A6 38%,#8E7A72 100%)}
+.desk::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 60% at 20% 10%,rgba(255,255,255,.45),transparent 60%)}
+.menubar{position:absolute;top:0;left:0;right:0;height:26px;background:rgba(255,255,255,.35);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;gap:16px;padding:0 14px;font-size:12px;color:rgba(20,19,17,.8)}
+.menubar b{font-weight:600}
+.menubar .r{margin-left:auto;display:flex;gap:14px;align-items:center}
+.menubar .r img{width:15px;height:15px}
+.ov{position:absolute;right:6%;top:13%;width:min(300px,72%);background:rgba(250,249,245,.86);backdrop-filter:blur(30px) saturate(1.6);-webkit-backdrop-filter:blur(30px) saturate(1.6);border-radius:16px;box-shadow:0 20px 50px rgba(20,19,17,.25),0 0 0 .5px rgba(20,19,17,.12);padding:12px;font-size:13px;transform-origin:top right;transition:transform .34s var(--spring),opacity .22s}
+.ov.closed{transform:scale(.6) translateY(-20px);opacity:0}
+.ov-head{display:flex;align-items:center;justify-content:space-between;color:var(--gray550);font-size:11.5px;padding:2px 4px 8px}
+.ov-add{background:var(--white);border-radius:10px;padding:8px 10px;color:var(--gray450);box-shadow:0 0 0 1px var(--hair);display:flex;align-items:center;gap:6px}
+.ov-add.focus{box-shadow:0 0 0 2px var(--clay);color:var(--slate)}
+.ov-row{display:flex;align-items:center;gap:9px;padding:8px 4px;border-bottom:1px solid var(--hair)}
+.ov-row:last-child{border:none}
+.ov-row .chk{width:16px;height:16px;border-radius:5px}
+.ov-row .chk svg{width:10px;height:10px}
+.ov-row .tag{margin-left:auto;font-size:11px;color:var(--gray500)}
+.ov-row .tag.late{color:var(--clay-deep)}
+.ball{position:absolute;right:6%;top:13%;width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#F3E2D8 45%,var(--clay) 100%);box-shadow:0 8px 20px rgba(20,19,17,.25);transition:opacity .2s,transform .3s var(--spring);display:grid;place-items:center;color:var(--white);font-size:13px;font-weight:600}
+.ball:not(.show){opacity:0;transform:scale(.5)}
+.keys{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);display:flex;gap:8px;transition:opacity .3s}
+.keys span{min-width:44px;height:44px;padding:0 12px;border-radius:10px;background:rgba(250,249,245,.9);display:grid;place-items:center;font-size:17px;box-shadow:0 3px 0 rgba(20,19,17,.25),0 0 0 .5px rgba(20,19,17,.15);transition:transform .08s,box-shadow .08s;font-family:var(--sans)}
+.keys span.down{transform:translateY(3px);box-shadow:0 0 0 rgba(20,19,17,.25),0 0 0 .5px rgba(20,19,17,.15)}
+
+/* grid of small features */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+.tile{padding:28px;border-radius:24px;background:var(--white);box-shadow:var(--shadow-card),0 0 0 1px rgba(20,19,17,.04)}
+.tile .ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--clay-wash);color:var(--clay-deep);margin-bottom:18px}
+.tile .ico svg{width:20px;height:20px}
+.tile h3{font-family:var(--sans);font-weight:600;font-size:17px}
+.tile p{margin:8px 0 0;color:var(--gray550);font-size:14.5px}
+.center{text-align:center}
+.center .lede{margin:18px auto 0}
+
+/* syntax */
+.syntax{margin-top:44px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hair);border-radius:20px;overflow:hidden;box-shadow:0 0 0 1px var(--hair)}
+.syntax div{background:var(--ivory);padding:22px}
+.syntax h4{margin:0 0 12px;font-size:13px;font-weight:600;color:var(--gray550)}
+.syntax p{margin:0;display:flex;flex-wrap:wrap;gap:6px}
+
+/* devices */
+.devices{padding:100px 0;background:var(--paper)}
+.phone{width:min(300px,78vw);margin:0 auto;border-radius:48px;padding:10px;background:#1C1B1A;box-shadow:var(--shadow-win)}
+.phone img{border-radius:38px;width:100%;height:auto}
+.plat{display:grid;gap:14px;margin-top:28px}
+.plat div{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;background:var(--ivory);border-radius:16px}
+.plat svg{width:22px;height:22px;flex:0 0 auto;margin-top:2px;color:var(--slate)}
+.plat b{display:block;font-weight:600}
+.plat span{color:var(--gray550);font-size:14.5px}
+.plat em{font-style:normal;font-size:12px;color:var(--clay-deep);background:var(--clay-wash);padding:1px 8px;border-radius:999px;margin-left:6px;font-weight:500}
+
+/* privacy */
+.priv{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:48px}
+.priv h3{font-family:var(--sans);font-size:16px;font-weight:600;display:flex;gap:10px;align-items:center}
+.priv h3 svg{width:18px;height:18px;color:var(--clay)}
+.priv p{color:var(--gray550);margin:10px 0 0;font-size:14.5px}
+
+/* download */
+.dl{padding:110px 0 100px}
+.dl-card{background:var(--slate);color:var(--ivory);border-radius:32px;padding:64px 48px;text-align:center;position:relative;overflow:hidden}
+.dl-card::before{content:"";position:absolute;width:520px;height:520px;right:-160px;top:-220px;background:radial-gradient(circle,rgba(217,119,87,.45),transparent 65%)}
+.dl-card > *{position:relative}
+.dl-card img{width:76px;height:76px;margin:0 auto 22px}
+.dl-card h2{color:var(--ivory)}
+.dl-card .lede{color:rgba(250,249,245,.7);margin:16px auto 0;text-align:center}
+.dl-card .btn-light{background:var(--ivory);color:var(--slate)}
+.dl-card .btn-light:hover{background:#fff}
+.dl-card .btn-ghost{color:var(--ivory);box-shadow:inset 0 0 0 1px rgba(250,249,245,.3)}
+.dl-card .btn-ghost[aria-disabled]{opacity:.6;cursor:default}
+.dl-meta{margin-top:16px;font-size:13px;color:rgba(250,249,245,.55)}
+.faq{max-width:760px;margin:64px auto 0}
+.faq details{border-bottom:1px solid var(--hair);padding:4px 0}
+.faq summary{list-style:none;cursor:pointer;padding:18px 4px;font-size:16px;font-weight:500;display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:22px;line-height:1;color:var(--gray500);transition:transform .2s var(--ease)}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p,.faq details ol{margin:0 4px 18px;color:var(--gray700);font-size:15px}
+.faq ol{padding-left:20px}
+
+footer{border-top:1px solid var(--hair);padding:36px 0 48px;font-size:13.5px;color:var(--gray550)}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .9s var(--ease)}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .split{grid-template-columns:1fr;gap:40px}
+  .split.rev .copy{order:0}
+  .grid,.priv{grid-template-columns:1fr 1fr}
+  .syntax{grid-template-columns:1fr 1fr}
+  .win-side{display:none}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .nav-links a.hide-sm{display:none}
+  .hero{padding:48px 0 24px}
+  .win{height:500px;border-radius:12px}
+  .win-main{padding:22px 18px 16px}
+  .day-title{font-size:24px}
+  .grid,.priv,.syntax{grid-template-columns:1fr}
+  section.feat{padding:64px 0}
+  .manifesto{padding:80px 0 50px}
+  .dl-card{padding:48px 22px;border-radius:24px}
+  .hint{display:none}
+  .brand small{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+  .rv{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-check" viewBox="0 0 12 12"><path d="M2.5 6.3l2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-star" viewBox="0 0 16 16"><path d="M8 1.6l1.9 4 4.4.5-3.3 3 .9 4.3L8 11.2l-3.9 2.2.9-4.3-3.3-3 4.4-.5z" fill="currentColor"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 20 20"><rect x="3" y="4.5" width="14" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 8.5h14M7 2.5v3M13 2.5v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-list" viewBox="0 0 20 20"><path d="M7 5.5h10M7 10h10M7 14.5h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="3.5" cy="5.5" r="1.1" fill="currentColor"/><circle cx="3.5" cy="10" r="1.1" fill="currentColor"/><circle cx="3.5" cy="14.5" r="1.1" fill="currentColor"/></symbol>
+    <symbol id="i-book" viewBox="0 0 20 20"><path d="M4.5 3.5h9a2 2 0 012 2v11h-9a2 2 0 01-2-2zM4.5 14.5a2 2 0 012-2h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12.8 7.2l-1.6 4-4 1.6 1.6-4z" fill="currentColor"/></symbol>
+    <symbol id="i-up" viewBox="0 0 16 16"><path d="M8 13V3M3.5 7.5L8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 16 16"><path d="M8 1.5c.4 3.3 1.9 4.9 5.5 5.5-3.6.6-5.1 2.2-5.5 5.5-.4-3.3-1.9-4.9-5.5-5.5 3.6-.6 5.1-2.2 5.5-5.5z" fill="currentColor"/></symbol>
+    <symbol id="i-apple" viewBox="0 0 24 24"><path fill="currentColor" d="M16.4 12.7c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8s2.3-1.3 3.1-2.5c1-1.4 1.4-2.8 1.4-2.9-.1 0-2.7-1-2.7-4.1zM13.9 5.1c.7-.9 1.2-2 1-3.2-1 0-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.2.1 2.3-.6 3.1-1.5z"/></symbol>
+    <symbol id="i-down" viewBox="0 0 20 20"><path d="M10 3v10M5.5 9L10 13.5 14.5 9M4 16.5h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/favicon.png" alt=""><span data-i="brand">清单革命</span><small data-i="brandAlt">Manifest</small></a>
+    <div class="nav-links">
+      <a class="hide-sm" href="#features" data-i="navFeatures">功能</a>
+      <a class="hide-sm" href="#devices" data-i="navDevices">设备</a>
+      <a class="hide-sm" href="#faq" data-i="navFaq">常见问题</a>
+      <button class="lang" id="lang" type="button" aria-label="Switch language">EN</button>
+      <a class="btn btn-dark" href="#download" data-i="navDownload">下载</a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+<header class="hero">
+  <div class="wrap">
+    <img class="hero-icon rv" src="assets/icon-256.png" alt="">
+    <h1 class="rv" data-i="heroTitle" data-html>把今天要做的事，<br>变成<em>一张清单</em>。</h1>
+    <p class="lede rv" data-i="heroLede">清单革命是一款安静、克制的待办清单。打开它，只看今天；记下一件事，只要一句话；做完一件，就勾掉它。</p>
+    <div class="cta rv">
+      <a class="btn btn-dark" href="#download"><svg><use href="#i-apple"/></svg><span data-i="ctaMac">下载 Mac 版</span></a>
+      <a class="btn btn-ghost" href="#features" data-i="ctaMore">看看它能做什么</a>
+    </div>
+    <p class="cta-note rv" data-i="ctaNote">免费 · macOS 13 及以上 · Apple 芯片 · iPhone 与 iPad 版即将推出</p>
+
+    <div class="stage rv">
+      <div class="win" role="region" aria-label="Interactive demo">
+        <aside class="win-side" aria-hidden="true">
+          <div class="lights"><i></i><i></i><i></i></div>
+          <div class="side-brand"><svg><use href="#i-compass"/></svg><span data-i="brand">清单革命</span></div>
+          <div class="side-nav">
+            <div class="on"><svg><use href="#i-cal"/></svg><span data-i="navToday">今天</span><span id="sideCount">5</span></div>
+            <div><svg><use href="#i-list"/></svg><span data-i="navAll">全部待办</span><span>12</span></div>
+            <div><svg><use href="#i-book"/></svg><span data-i="navMonth">月度规划</span><span></span></div>
+          </div>
+          <div class="mini-cal" id="miniCal"></div>
+        </aside>
+        <div class="win-main">
+          <div class="day-title" id="dayTitle"></div>
+          <div class="day-sub" id="daySub"></div>
+          <form class="add" id="addForm" autocomplete="off">
+            <input id="addInput" type="text" aria-label="Add a to-do">
+            <button type="submit" id="addBtn" aria-label="Add"><svg><use href="#i-up"/></svg></button>
+          </form>
+          <div class="chips" id="chips"></div>
+          <div class="list" id="list"></div>
+          <div class="toast" id="toast"><span id="toastText"></span><button type="button" id="undoBtn" data-i="undo">撤销</button></div>
+        </div>
+      </div>
+      <p class="hint" data-i="hint" data-html>这是一个可以动手试的演示：勾掉一件事，或者在输入框里写 <kbd>30m #工作 明天</kbd> 试试。</p>
+    </div>
+  </div>
+</header>
+
+<section class="manifesto">
+  <div class="wrap">
+    <blockquote class="rv" data-i="manifesto" data-html>名字来自阿图·葛文德的《清单革命》。<br>再熟练的人也会忘事，<em>一张写下来的清单</em>，<br>能让我们把注意力留给真正重要的事。</blockquote>
+    <p class="rv" data-i="manifestoSub">英文名 Manifest：一份货单，一张名录，也是“让事情变得清楚”。</p>
+  </div>
+</section>
+
+<section class="feat" id="features">
+  <div class="wrap split">
+    <div class="copy rv">
+      <div class="eyebrow" data-i="f1Eye">今天</div>
+      <h2 data-i="f1Title">一打开，就知道今天要做什么。</h2>
+      <p class="lede" data-i="f1Lede">首页只有今天：过期没做完的、标了关键的、普通的，各归其位。做完的事轻轻划掉，再安静地沉到「已完成」里。</p>
+      <ul class="bul">
+        <li data-i="f1b1">关键事项单独置顶，日历上用小圆点标出来</li>
+        <li data-i="f1b2">工作与生活分开标记，下班后可以一键隐藏工作</li>
+        <li data-i="f1b3">任务可以跨好几天，也可以拆成几个小步骤</li>
+        <li data-i="f1b4">给事情估个时长，开始做时计时，忘了停也会提醒你</li>
+      </ul>
+    </div>
+    <div class="card rv" style="padding:30px 28px" aria-hidden="true">
+      <div class="sec key" style="padding-top:0"><svg><use href="#i-star"/></svg><span data-i="secKey">关键事项</span></div>
+      <div class="row"><span class="chk"></span><div class="body"><span class="ttl" data-i="s1">给妈妈订生日花束</span></div></div>
+      <div class="row"><span class="chk"></span><div class="body"><span class="ttl" data-i="s2">写第四季度复盘周报</span><div class="meta"><span class="chip" data-i="est45">预估 45 分</span><span class="chip work" data-i="work">工作</span></div></div></div>
+      <div class="sec"><span data-i="secOther">其他</span></div>
+      <div class="row"><span class="chk"></span><div class="body"><span class="ttl" data-i="s3">早晨流程</span><div class="meta"><span class="chip">1/3</span></div></div></div>
+      <div class="row"><span class="chk"></span><div class="body"><span class="ttl" data-i="s4">预约体检</span></div></div>
+      <div class="row done settled"><span class="chk"><svg><use href="#i-check"/></svg></span><div class="body"><span class="ttl" data-i="s5">去超市买水果</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="feat" style="padding-top:20px">
+  <div class="wrap split rev">
+    <div class="copy rv">
+      <div class="eyebrow" data-i="f2Eye">一句话记待办</div>
+      <h2 data-i="f2Title">想到什么，说一句就好。</h2>
+      <p class="lede" data-i="f2Lede">把脑子里的一团事写成一句话，清单革命会把它拆成几条待办：日期、时长、工作还是生活、是不是关键。先给你看草稿，确认了才加进清单。</p>
+      <ul class="bul">
+        <li data-i="f2b1">“周五”“下周一”“后天”都能认对</li>
+        <li data-i="f2b2">只发送这一句话，你已有的待办不会离开本机</li>
+        <li data-i="f2b3">模型密钥只存在这台设备的钥匙串里</li>
+      </ul>
+    </div>
+    <div class="card ai rv" id="aiDemo" aria-label="Natural-language add demo">
+      <div class="ai-in"><span class="spark" id="aiSpark"><svg><use href="#i-spark"/></svg></span><span><span id="aiText"></span><span class="caret"></span></span></div>
+      <div class="drafts" id="aiDrafts"></div>
+      <div class="ai-foot" id="aiFoot"><button class="replay" id="aiReplay" type="button" data-i="replay">再演示一次</button><span class="btn btn-dark" data-i="aiAdd">加入 3 项</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="feat" style="padding-top:20px">
+  <div class="wrap split">
+    <div class="copy rv">
+      <div class="eyebrow" data-i="f3Eye">桌面浮层</div>
+      <h2 data-i="f3Title">不用切窗口，今天就在桌面一角。</h2>
+      <p class="lede" data-i="f3Lede">一个小小的浮层停在桌面上，只放今天该做和已经过期的事。不需要时收成一颗小球，按 ⌃⌥Space 随时唤出来记一笔。</p>
+      <ul class="bul">
+        <li data-i="f3b1">点圆圈完成，点文字改名，双击打开完整编辑</li>
+        <li data-i="f3b2">高度跟着待办多少自动伸缩</li>
+        <li data-i="f3b3">只留在当前桌面，不打扰全屏的应用</li>
+      </ul>
+    </div>
+    <div class="desk rv" id="desk" aria-hidden="true">
+      <div class="menubar"><b></b><b data-i="brand">清单革命</b><span data-i="mFile">文件</span><span data-i="mEdit">编辑</span><span class="r"><img src="assets/favicon.png" alt=""><span id="clock">9:41</span></span></div>
+      <div class="ball" id="ball">3</div>
+      <div class="ov" id="ov">
+        <div class="ov-head"><span id="ovDate"></span><span>—</span></div>
+        <div class="ov-add" id="ovAdd"><span id="ovAddText" data-i="ovPh">新待办</span></div>
+        <div id="ovList" style="margin-top:6px"></div>
+      </div>
+      <div class="keys" id="keys"><span>⌃</span><span>⌥</span><span style="min-width:120px">Space</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="feat" style="padding-top:40px">
+  <div class="wrap">
+    <div class="center rv">
+      <div class="eyebrow" data-i="gEye">还有这些</div>
+      <h2 data-i="gTitle">小处也用了心。</h2>
+    </div>
+    <div class="grid">
+      <div class="tile rv"><div class="ico"><svg><use href="#i-list"/></svg></div><h3 data-i="g1t">全部待办 · 时间线</h3><p data-i="g1p">所有事情按日期排成一条线。拖动中间改日期，拖两端改起止，松手后 5 秒内可以撤销。</p></div>
+      <div class="tile rv"><div class="ico"><svg><use href="#i-book"/></svg></div><h3 data-i="g2t">月度规划</h3><p data-i="g2p">每个月一页记事纸，打开就能写，自动保存。可以加粗、用五种颜色划重点、写圆点列表。</p></div>
+      <div class="tile rv"><div class="ico"><svg><use href="#i-compass"/></svg></div><h3 data-i="g3t">多设备同步</h3><p data-i="g3p">用 Google 账号登录，Mac、iPhone、iPad 看到同一份清单。断网照常用，联网后自动补上。</p></div>
+      <div class="tile rv"><div class="ico"><svg viewBox="0 0 20 20"><rect x="2.5" y="5" width="15" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 8h1M9.5 8h1M13.5 8h1M6 12h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><h3 data-i="g4t">键盘就能做完</h3><p data-i="g4p">↑↓ 选择，空格勾掉，↩ 编辑，⌘Z 撤销刚才的改动；⌘1 到 ⌘3 切换页面，⌘N 新建。</p></div>
+      <div class="tile rv"><div class="ico"><svg viewBox="0 0 20 20"><path d="M3 10c2.5-4 4.5-4 7 0s4.5 4 7 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div><h3 data-i="g5t">手感</h3><p data-i="g5p">勾选、补位、切页都有短而准的动效，不拖沓也不生硬。系统开启「减少动态效果」时会自动收敛。</p></div>
+      <div class="tile rv"><div class="ico"><svg viewBox="0 0 20 20"><path d="M7 7l-3.5 3L7 13M13 7l3.5 3L13 13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 data-i="g6t">给脚本的入口</h3><p data-i="g6p">用 <code style="font-family:var(--mono);font-size:13px">qingdan://</code> 链接添加、修改、完成待办，方便接上快捷指令和你自己的自动化。</p></div>
+    </div>
+
+    <div class="syntax rv">
+      <div><h4 data-i="sy1">日期</h4><p><code data-i="sy1a">今天</code><code data-i="sy1b">明天</code><code data-i="sy1c">周五</code><code data-i="sy1d">下周一</code><code>11/5</code></p></div>
+      <div><h4 data-i="sy2">预估时长</h4><p><code>30m</code><code>1h</code><code>45min</code><code>2hrs</code></p></div>
+      <div><h4 data-i="sy3">工作 / 生活</h4><p><code data-i="sy3a">#工作</code><code data-i="sy3b">#生活</code></p></div>
+      <div><h4 data-i="sy4">关键事项</h4><p><code data-i="sy4a">#关键</code><code>!</code></p></div>
+    </div>
+    <p class="center" style="color:var(--gray550);font-size:14px;margin-top:16px" data-i="syNote">快速添加时可以直接写这些简写，中英文都认。</p>
+  </div>
+</section>
+
+<section class="devices" id="devices">
+  <div class="wrap split rev">
+    <div class="copy rv">
+      <div class="eyebrow" data-i="dEye">Mac · iPhone · iPad</div>
+      <h2 data-i="dTitle">桌前和路上，是同一张清单。</h2>
+      <p class="lede" data-i="dLede">三个平台共用同一套界面和动效：在 Mac 上计划一周，在手机上勾掉刚做完的事。</p>
+      <div class="plat">
+        <div><svg><use href="#i-apple"/></svg><p style="margin:0"><b data-i="pMac">Mac</b><span data-i="pMacD">主窗口、桌面浮层、菜单栏和全局快捷键。macOS 13 及以上，Apple 芯片。</span></p></div>
+        <div><svg viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 5h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><p style="margin:0"><b><span data-i="pPhone">iPhone</span><em data-i="soon">即将推出</em></b><span data-i="pPhoneD">玻璃质感的底部标签栏，手指拖动的面板，还有桌面小组件。</span></p></div>
+        <div><svg viewBox="0 0 24 24"><rect x="3.5" y="3" width="17" height="18" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><p style="margin:0"><b><span data-i="pPad">iPad</span><em data-i="soon">即将推出</em></b><span data-i="pPadD">侧栏加日历的宽屏布局，横竖屏都好用。</span></p></div>
+      </div>
+    </div>
+    <div class="rv"><div class="phone"><img src="assets/iphone.jpg" alt="清单革命 iPhone 截图" width="603" height="1311" loading="lazy" data-i-alt="phoneAlt"></div></div>
+  </div>
+</section>
+
+<section class="feat">
+  <div class="wrap">
+    <div class="center rv">
+      <div class="eyebrow" data-i="prEye">隐私</div>
+      <h2 data-i="prTitle">你的清单，只属于你。</h2>
+    </div>
+    <div class="priv">
+      <div class="rv"><h3><svg><use href="#i-compass"/></svg><span data-i="pr1t">本机优先</span></h3><p data-i="pr1p">不登录也能完整使用，数据存在你自己的 Mac 上，每次保存都是完整的原子写入。</p></div>
+      <div class="rv"><h3><svg><use href="#i-compass"/></svg><span data-i="pr2t">同步可选</span></h3><p data-i="pr2p">登录后才会同步。第一次同步前会告诉你两边各有多少条，并先在本机备份一份。</p></div>
+      <div class="rv"><h3><svg><use href="#i-compass"/></svg><span data-i="pr3t">没有广告和追踪</span></h3><p data-i="pr3p">没有广告，也不做行为分析。一句话记待办只发送你写的那一句。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="dl" id="download">
+  <div class="wrap">
+    <div class="dl-card rv">
+      <img src="assets/icon-256.png" alt="">
+      <h2 data-i="dlTitle">现在就开始你的第一张清单。</h2>
+      <p class="lede" data-i="dlLede">清单革命目前是早期版本，免费下载。</p>
+      <div class="cta">
+        <a class="btn btn-light" href="downloads/Manifest-Mac-0.1.0-arm64.dmg" download><svg><use href="#i-down"/></svg><span data-i="dlMac">下载 Mac 版（.dmg）</span></a>
+        <span class="btn btn-ghost" aria-disabled="true"><svg><use href="#i-apple"/></svg><span data-i="dlIos">App Store · 即将上架</span></span>
+      </div>
+      <p class="dl-meta" data-i="dlMeta">版本 0.1.0 · 1 MB · macOS 13+ · Apple 芯片（M1 及更新）</p>
+    </div>
+
+    <div class="faq" id="faq">
+      <details class="rv"><summary data-i="q1">打开时提示“无法验证开发者”，怎么办？</summary><div data-i="a1" data-html><p>早期版本还没有经过 Apple 公证。第一次打开时：</p><ol><li>把清单革命拖进“应用程序”文件夹；</li><li>在“应用程序”里按住 Control 点按它，选「打开」，再点「打开」；</li><li>如果仍被拦下，前往「系统设置 → 隐私与安全性」，在底部点「仍要打开」。</li></ol><p>之后就能正常双击打开了。</p></div></details>
+      <details class="rv"><summary data-i="q2">需要注册账号吗？</summary><p data-i="a2">不需要。不登录也能完整使用，数据只保存在本机。想在多台设备间同步时，再用 Google 账号登录。</p></details>
+      <details class="rv"><summary data-i="q3">一句话记待办需要付费吗？</summary><p data-i="a3">这项功能用的是 DeepSeek 模型，需要你在设置里填入自己的 API 密钥，按 DeepSeek 的价格计费，一句话的花费通常不到一分钱。不填密钥时，其他功能都不受影响。</p></details>
+      <details class="rv"><summary data-i="q4">支持 Intel 芯片的 Mac 吗？</summary><p data-i="a4">目前的安装包只支持 Apple 芯片（M1 及更新）。如果你用的是 Intel Mac，欢迎告诉我们。</p></details>
+      <details class="rv"><summary data-i="q5">iPhone 和 iPad 版什么时候上线？</summary><p data-i="a5">已经在作者自己的手机上每天使用，正在准备上架 App Store。</p></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 <span data-i="brand">清单革命</span> Manifest</span>
+    <span data-i="footNote">致敬阿图·葛文德《清单革命》</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var T = {
+ zh:{
+  brand:'清单革命',brandAlt:'Manifest',navFeatures:'功能',navDevices:'设备',navFaq:'常见问题',navDownload:'下载',
+  heroTitle:'把今天要做的事，<br>变成<em>一张清单</em>。',
+  heroLede:'清单革命是一款安静、克制的待办清单。打开它，只看今天；记下一件事，只要一句话；做完一件，就勾掉它。',
+  ctaMac:'下载 Mac 版',ctaMore:'看看它能做什么',ctaNote:'免费 · macOS 13 及以上 · Apple 芯片 · iPhone 与 iPad 版即将推出',
+  navToday:'今天',navAll:'全部待办',navMonth:'月度规划',undo:'撤销',
+  hint:'这是一个可以动手试的演示：勾掉一件事，或者在输入框里写 <kbd>30m #工作 明天</kbd> 试试。',
+  manifesto:'名字来自阿图·葛文德的《清单革命》。<br>再熟练的人也会忘事，<em>一张写下来的清单</em>，<br>能让我们把注意力留给真正重要的事。',
+  manifestoSub:'英文名 Manifest：一份货单，一张名录，也是“让事情变得清楚”。',
+  f1Eye:'今天',f1Title:'一打开，就知道今天要做什么。',
+  f1Lede:'首页只有今天：过期没做完的、标了关键的、普通的，各归其位。做完的事轻轻划掉，再安静地沉到「已完成」里。',
+  f1b1:'关键事项单独置顶，日历上用小圆点标出来',f1b2:'工作与生活分开标记，下班后可以一键隐藏工作',f1b3:'任务可以跨好几天，也可以拆成几个小步骤',f1b4:'给事情估个时长，开始做时计时，忘了停也会提醒你',
+  secKey:'关键事项',secOther:'其他',s1:'给妈妈订生日花束',s2:'写第四季度复盘周报',s3:'早晨流程',s4:'预约体检',s5:'去超市买水果',est45:'预估 45 分',work:'工作',
+  f2Eye:'一句话记待办',f2Title:'想到什么，说一句就好。',
+  f2Lede:'把脑子里的一团事写成一句话，清单革命会把它拆成几条待办：日期、时长、工作还是生活、是不是关键。先给你看草稿，确认了才加进清单。',
+  f2b1:'“周五”“下周一”“后天”都能认对',f2b2:'只发送这一句话，你已有的待办不会离开本机',f2b3:'模型密钥只存在这台设备的钥匙串里',
+  replay:'再演示一次',aiAdd:'加入 3 项',
+  f3Eye:'桌面浮层',f3Title:'不用切窗口，今天就在桌面一角。',
+  f3Lede:'一个小小的浮层停在桌面上，只放今天该做和已经过期的事。不需要时收成一颗小球，按 ⌃⌥Space 随时唤出来记一笔。',
+  f3b1:'点圆圈完成，点文字改名，双击打开完整编辑',f3b2:'高度跟着待办多少自动伸缩',f3b3:'只留在当前桌面，不打扰全屏的应用',
+  mFile:'文件',mEdit:'编辑',ovPh:'新待办',
+  gEye:'还有这些',gTitle:'小处也用了心。',
+  g1t:'全部待办 · 时间线',g1p:'所有事情按日期排成一条线。拖动中间改日期，拖两端改起止，松手后 5 秒内可以撤销。',
+  g2t:'月度规划',g2p:'每个月一页记事纸，打开就能写，自动保存。可以加粗、用五种颜色划重点、写圆点列表。',
+  g3t:'多设备同步',g3p:'用 Google 账号登录，Mac、iPhone、iPad 看到同一份清单。断网照常用，联网后自动补上。',
+  g4t:'键盘就能做完',g4p:'↑↓ 选择，空格勾掉，↩ 编辑，⌘Z 撤销刚才的改动；⌘1 到 ⌘3 切换页面，⌘N 新建。',
+  g5t:'手感',g5p:'勾选、补位、切页都有短而准的动效，不拖沓也不生硬。系统开启「减少动态效果」时会自动收敛。',
+  g6t:'给脚本的入口',g6p:'用 <code style="font-family:var(--mono);font-size:13px">qingdan://</code> 链接添加、修改、完成待办，方便接上快捷指令和你自己的自动化。',
+  sy1:'日期',sy1a:'今天',sy1b:'明天',sy1c:'周五',sy1d:'下周一',sy2:'预估时长',sy3:'工作 / 生活',sy3a:'#工作',sy3b:'#生活',sy4:'关键事项',sy4a:'#关键',
+  syNote:'快速添加时可以直接写这些简写，中英文都认。',
+  dEye:'Mac · iPhone · iPad',dTitle:'桌前和路上，是同一张清单。',dLede:'三个平台共用同一套界面和动效：在 Mac 上计划一周，在手机上勾掉刚做完的事。',
+  pMac:'Mac',pMacD:'主窗口、桌面浮层、菜单栏和全局快捷键。macOS 13 及以上，Apple 芯片。',pPhone:'iPhone',pPhoneD:'玻璃质感的底部标签栏，手指拖动的面板，还有桌面小组件。',pPad:'iPad',pPadD:'侧栏加日历的宽屏布局，横竖屏都好用。',soon:'即将推出',phoneAlt:'清单革命 iPhone 截图',
+  prEye:'隐私',prTitle:'你的清单，只属于你。',pr1t:'本机优先',pr1p:'不登录也能完整使用，数据存在你自己的 Mac 上，每次保存都是完整的原子写入。',
+  pr2t:'同步可选',pr2p:'登录后才会同步。第一次同步前会告诉你两边各有多少条，并先在本机备份一份。',pr3t:'没有广告和追踪',pr3p:'没有广告，也不做行为分析。一句话记待办只发送你写的那一句。',
+  dlTitle:'现在就开始你的第一张清单。',dlLede:'清单革命目前是早期版本，免费下载。',dlMac:'下载 Mac 版（.dmg）',dlIos:'App Store · 即将上架',dlMeta:'版本 0.1.0 · 1 MB · macOS 13+ · Apple 芯片（M1 及更新）',
+  q1:'打开时提示“无法验证开发者”，怎么办？',
+  a1:'<p>早期版本还没有经过 Apple 公证。第一次打开时：</p><ol><li>把清单革命拖进“应用程序”文件夹；</li><li>在“应用程序”里按住 Control 点按它，选「打开」，再点「打开」；</li><li>如果仍被拦下，前往「系统设置 → 隐私与安全性」，在底部点「仍要打开」。</li></ol><p>之后就能正常双击打开了。</p>',
+  q2:'需要注册账号吗？',a2:'不需要。不登录也能完整使用，数据只保存在本机。想在多台设备间同步时，再用 Google 账号登录。',
+  q3:'一句话记待办需要付费吗？',a3:'这项功能用的是 DeepSeek 模型，需要你在设置里填入自己的 API 密钥，按 DeepSeek 的价格计费，一句话的花费通常不到一分钱。不填密钥时，其他功能都不受影响。',
+  q4:'支持 Intel 芯片的 Mac 吗？',a4:'目前的安装包只支持 Apple 芯片（M1 及更新）。如果你用的是 Intel Mac，欢迎告诉我们。',
+  q5:'iPhone 和 iPad 版什么时候上线？',a5:'已经在作者自己的手机上每天使用，正在准备上架 App Store。',
+  footNote:'致敬阿图·葛文德《清单革命》',
+  /* demo */
+  dow:['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
+  title:function(d,n){return d+'，今天有 <span class="num">'+n+'</span> 件事';},
+  titleDone:function(d){return d+'，今天的事都做完了';},
+  sub:function(m,d){return m+'月'+d+'日';},
+  ph:'添加一件事，可写 30m #工作 明天',
+  done:function(n){return '已完成 '+n+' 项';},
+  doneToast:function(t){return '已完成「'+t+'」';},
+  addedToast:function(t){return '已添加「'+t+'」';},
+  tomorrowToast:function(t){return '「'+t+'」已放到明天';},
+  est:function(m){return '预估 '+(m>=60? (m%60? (m/60).toFixed(1)+' 小时': m/60+' 小时'): m+' 分');},
+  life:'生活',key:'关键',tomorrow:'明天',
+  tasks:[['准备周会的三页材料',1,1,60],['给妈妈订生日花束',0,1,0],['提交费用报销单',1,0,15],['预约体检',0,0,0],['整理本周读书笔记',0,0,30]],
+  doneTasks:['去超市买水果'],
+  aiSentence:'周五前交报销单，下周一上午和小王过一下 Q4 复盘，大概一小时，顺便记得给猫买粮',
+  aiDrafts:[['提交费用报销单',['周五','工作']],['和小王过 Q4 复盘',['下周一','预估 1 小时','工作','关键']],['给猫买猫粮',['今天','生活']]],
+  ovTasks:[['提交费用报销单','昨天',1],['准备周会材料','',0],['预约体检','',0]],
+  ovType:'取快递 15m',
+  calHead:function(y,m){return y+'年'+m+'月';},calDow:['日','一','二','三','四','五','六']
+ },
+ en:{
+  brand:'Manifest',brandAlt:'清单革命',navFeatures:'Features',navDevices:'Devices',navFaq:'FAQ',navDownload:'Download',
+  heroTitle:'Turn today into<br><em>one clear list</em>.',
+  heroLede:'Manifest is a quiet, focused to-do list. Open it and see only today. Add a task in a single sentence. Finish it, and tick it off.',
+  ctaMac:'Download for Mac',ctaMore:'See what it does',ctaNote:'Free · macOS 13 or later · Apple silicon · iPhone and iPad coming soon',
+  navToday:'Today',navAll:'All to-dos',navMonth:'Monthly plan',undo:'Undo',
+  hint:'This demo is live: tick something off, or type <kbd>30m #work tomorrow</kbd> into the box.',
+  manifesto:'The name comes from Atul Gawande’s <i>The Checklist Manifesto</i>.<br>Even experts forget things. <em>A list written down</em><br>frees your attention for what really matters.',
+  manifestoSub:'A manifest is a list of what’s on board — and to make something plain to see.',
+  f1Eye:'Today',f1Title:'Open it and know what today holds.',
+  f1Lede:'The home screen is only today: overdue, key and everything else, each in its place. Finished tasks get a gentle strike-through, then settle quietly into Done.',
+  f1b1:'Key tasks sit on top and get a dot on the calendar',f1b2:'Tag work and life separately — hide work after hours in one tap',f1b3:'Tasks can span several days or break into small steps',f1b4:'Estimate how long things take and time them; it nudges you if you forget to stop',
+  secKey:'Key tasks',secOther:'Other',s1:'Order birthday flowers for Mom',s2:'Write the Q4 review',s3:'Morning routine',s4:'Book a check-up',s5:'Buy fruit',est45:'Est. 45 min',work:'Work',
+  f2Eye:'Add in a sentence',f2Title:'Just say what’s on your mind.',
+  f2Lede:'Write the whole jumble as one sentence and Manifest splits it into tasks with dates, durations, work or life, and what’s key. You see drafts first; nothing is added until you confirm.',
+  f2b1:'Understands “Friday”, “next Monday”, “the day after tomorrow”',f2b2:'Only that sentence is sent — your existing tasks stay on device',f2b3:'Your model key lives only in this device’s keychain',
+  replay:'Play again',aiAdd:'Add 3',
+  f3Eye:'Desktop overlay',f3Title:'Today, in a corner of your desktop.',
+  f3Lede:'A small overlay rests on your desktop with only what’s due today or overdue. Fold it into a little ball when you don’t need it; press ⌃⌥Space to jot something down anytime.',
+  f3b1:'Click the circle to finish, the text to rename, double-click for full edit',f3b2:'Grows and shrinks with your list',f3b3:'Stays on the current desktop, out of full-screen apps',
+  mFile:'File',mEdit:'Edit',ovPh:'New to-do',
+  gEye:'And more',gTitle:'Care in the small things.',
+  g1t:'All to-dos · Timeline',g1p:'Everything laid out by date. Drag the middle to move it, drag the ends to change start and end, undo within 5 seconds.',
+  g2t:'Monthly plan',g2p:'A page of notes for each month that saves itself. Bold, highlight in five colours, write bullet lists.',
+  g3t:'Sync across devices',g3p:'Sign in with Google and see the same list on Mac, iPhone and iPad. Works offline and catches up when you’re back.',
+  g4t:'Keyboard all the way',g4p:'↑↓ to select, Space to tick, ↩ to edit, ⌘Z to undo. ⌘1–⌘3 switch pages, ⌘N adds a task.',
+  g5t:'Feel',g5p:'Ticking, reflowing and switching pages use short, precise motion — never sluggish, never stiff. Respects Reduce Motion.',
+  g6t:'A door for scripts',g6p:'Add, edit and complete tasks with <code style="font-family:var(--mono);font-size:13px">qingdan://</code> links — hook it up to Shortcuts or your own automations.',
+  sy1:'Dates',sy1a:'today',sy1b:'tmr',sy1c:'fri',sy1d:'next mon',sy2:'Estimate',sy3:'Work / life',sy3a:'#work',sy3b:'#life',sy4:'Key',sy4a:'#key',
+  syNote:'Type these shortcuts straight into quick add — in English or Chinese.',
+  dEye:'Mac · iPhone · iPad',dTitle:'At your desk or on the go, one list.',dLede:'All three share the same interface and motion: plan the week on your Mac, tick things off on your phone.',
+  pMac:'Mac',pMacD:'Main window, desktop overlay, menu bar and a global shortcut. macOS 13 or later, Apple silicon.',pPhone:'iPhone',pPhoneD:'A glassy tab bar, sheets that follow your finger, and Home Screen widgets.',pPad:'iPad',pPadD:'A wide layout with sidebar and calendar, in any orientation.',soon:'Coming soon',phoneAlt:'Manifest on iPhone',
+  prEye:'Privacy',prTitle:'Your list is yours alone.',pr1t:'Local first',pr1p:'Fully usable without an account. Data lives on your Mac, and every save is a complete atomic write.',
+  pr2t:'Sync is optional',pr2p:'Nothing syncs until you sign in. Before the first sync it shows what’s on each side and backs up locally.',pr3t:'No ads, no tracking',pr3p:'No ads and no behaviour analytics. Sentence-add sends only the sentence you wrote.',
+  dlTitle:'Start your first list today.',dlLede:'Manifest is an early release, free to download.',dlMac:'Download for Mac (.dmg)',dlIos:'App Store · Coming soon',dlMeta:'Version 0.1.0 · 1 MB · macOS 13+ · Apple silicon (M1 or later)',
+  q1:'macOS says it can’t verify the developer. What do I do?',
+  a1:'<p>This early release isn’t notarized by Apple yet. The first time you open it:</p><ol><li>Drag Manifest into Applications;</li><li>Control-click it in Applications, choose Open, then Open again;</li><li>If it’s still blocked, go to System Settings → Privacy &amp; Security and click Open Anyway at the bottom.</li></ol><p>After that it opens normally.</p>',
+  q2:'Do I need an account?',a2:'No. Everything works without signing in, and your data stays on your Mac. Sign in with Google only if you want to sync between devices.',
+  q3:'Does sentence-add cost money?',a3:'It uses a DeepSeek model with your own API key, entered in Settings, billed at DeepSeek’s rates — usually a tiny fraction of a cent per sentence. Without a key, everything else works the same.',
+  q4:'Does it run on Intel Macs?',a4:'The current build supports Apple silicon (M1 and later) only. If you’re on an Intel Mac, let us know.',
+  q5:'When are the iPhone and iPad versions coming?',a5:'They’re already in daily use on the author’s own phone and being prepared for the App Store.',
+  footNote:'With thanks to Atul Gawande’s The Checklist Manifesto',
+  dow:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+  title:function(d,n){return d+', <span class="num">'+n+'</span> '+(n===1?'thing':'things')+' today';},
+  titleDone:function(d){return d+', all done for today';},
+  sub:function(m,d){return ['January','February','March','April','May','June','July','August','September','October','November','December'][m-1]+' '+d;},
+  ph:'Add a task — try 30m #work tomorrow',
+  done:function(n){return n+' done';},
+  doneToast:function(t){return 'Completed “'+t+'”';},
+  addedToast:function(t){return 'Added “'+t+'”';},
+  tomorrowToast:function(t){return '“'+t+'” moved to tomorrow';},
+  est:function(m){return 'Est. '+(m>=60? (m%60? (m/60).toFixed(1)+' h': m/60+' h'): m+' min');},
+  life:'Life',key:'Key',tomorrow:'Tomorrow',
+  tasks:[['Prep three slides for the weekly sync',1,1,60],['Order birthday flowers for Mom',0,1,0],['Submit expense report',1,0,15],['Book a check-up',0,0,0],['Tidy this week’s reading notes',0,0,30]],
+  doneTasks:['Buy fruit'],
+  aiSentence:'Expenses due Friday, go over the Q4 review with Sam next Monday morning for about an hour, and buy cat food',
+  aiDrafts:[['Submit expense report',['Friday','Work']],['Q4 review with Sam',['Next Mon','Est. 1 h','Work','Key']],['Buy cat food',['Today','Life']]],
+  ovTasks:[['Submit expense report','Yesterday',1],['Prep weekly sync slides','',0],['Book a check-up','',0]],
+  ovType:'Pick up parcel 15m',
+  calHead:function(y,m){return ['January','February','March','April','May','June','July','August','September','October','November','December'][m-1]+' '+y;},calDow:['S','M','T','W','T','F','S']
+ }
+};
+
+var store={get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
+var q=new URLSearchParams(location.search).get('lang');
+var lang=(q==='en'||q==='zh')?q:(store.get('manifest-lang')||((navigator.language||'zh').toLowerCase().indexOf('zh')===0?'zh':'en'));
+var L=T[lang];
+var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var $=function(id){return document.getElementById(id);};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function svg(id){return '<svg><use href="#'+id+'"/></svg>';}
+
+function applyLang(){
+  L=T[lang];
+  document.documentElement.lang=lang==='zh'?'zh-CN':'en';
+  document.title=lang==='zh'?'清单革命 Manifest — 把今天要做的事，变成一张清单':'Manifest — Turn today into one clear list';
+  document.querySelectorAll('[data-i]').forEach(function(el){
+    var v=L[el.getAttribute('data-i')]; if(typeof v!=='string')return;
+    if(el.hasAttribute('data-html')||/<|&/.test(v))el.innerHTML=v;else el.textContent=v;
+  });
+  document.querySelectorAll('[data-i-alt]').forEach(function(el){el.alt=L[el.getAttribute('data-i-alt')];});
+  $('lang').textContent=lang==='zh'?'EN':'中文';
+  $('addInput').placeholder=L.ph;
+  resetDemo(); renderCal(); resetOverlay(); if(aiStarted)playAI();
+}
+$('lang').addEventListener('click',function(){lang=lang==='zh'?'en':'zh';store.set('manifest-lang',lang);applyLang();});
+
+/* nav border */
+var nav=$('nav');
+addEventListener('scroll',function(){nav.classList.toggle('scrolled',scrollY>8);},{passive:true});
+
+/* reveal */
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('.rv').forEach(function(el,i){
+  if(el.parentElement && el.parentElement.classList.contains('grid'))el.style.transitionDelay=(i%3)*70+'ms';
+  io.observe(el);
+});
+
+/* ---------- Today demo ---------- */
+var now=new Date();
+var tasks=[],uid=0,lastUndo=null,toastTimer=0;
+function resetDemo(){
+  uid=0;
+  tasks=L.tasks.map(function(t){return {id:++uid,title:t[0],work:!!t[1],key:!!t[2],est:t[3],done:false};});
+  L.doneTasks.forEach(function(t){tasks.push({id:++uid,title:t,work:false,key:false,est:0,done:true});});
+  hideToast(); render(false);
+}
+function openCount(){return tasks.filter(function(t){return !t.done;}).length;}
+function renderTitle(){
+  var n=openCount(),d=L.dow[now.getDay()];
+  $('dayTitle').innerHTML=n?L.title(d,n):L.titleDone(d);
+  $('daySub').textContent=L.sub(now.getMonth()+1,now.getDate());
+  $('sideCount').textContent=n;
+}
+function rowHTML(t){
+  var meta='';
+  if(t.est)meta+='<span class="chip">'+esc(L.est(t.est))+'</span>';
+  if(t.work)meta+='<span class="chip work">'+esc(L.work)+'</span>';
+  return '<div class="row'+(t.done?' done settled':'')+'" data-id="'+t.id+'">'+
+    '<button type="button" class="chk" aria-label="'+(t.done?'Undo':'Complete')+'">'+svg('i-check')+'</button>'+
+    '<div class="body"><span class="ttl">'+esc(t.title)+'</span><div class="meta">'+meta+'</div></div></div>';
+}
+function render(animate,freshId){
+  var list=$('list'),before={};
+  if(animate&&!reduce)list.querySelectorAll('[data-id],[data-sec]').forEach(function(el){before[el.dataset.id||('s'+el.dataset.sec)]=el.getBoundingClientRect().top;});
+  var key=tasks.filter(function(t){return !t.done&&t.key;}),rest=tasks.filter(function(t){return !t.done&&!t.key;}),done=tasks.filter(function(t){return t.done;});
+  var h='';
+  if(key.length)h+='<div class="sec key" data-sec="k">'+svg('i-star')+'<span>'+esc(L.secKey)+'</span></div>'+key.map(rowHTML).join('');
+  if(rest.length)h+='<div class="sec" data-sec="o"><span>'+esc(L.secOther)+'</span></div>'+rest.map(rowHTML).join('');
+  if(done.length)h+='<div class="sec" data-sec="d"><span>'+esc(L.done(done.length))+'</span></div>'+done.map(rowHTML).join('');
+  list.innerHTML=h;
+  renderTitle();
+  if(animate&&!reduce){
+    list.querySelectorAll('[data-id],[data-sec]').forEach(function(el){
+      var k=el.dataset.id||('s'+el.dataset.sec),b=before[k];
+      if(b==null){if(String(freshId)!==el.dataset.id){el.animate([{opacity:0},{opacity:1}],{duration:220,easing:'ease-out'});}return;}
+      var dy=b-el.getBoundingClientRect().top;
+      if(Math.abs(dy)>.5)el.animate([{transform:'translateY('+dy+'px)'},{transform:'none'}],{duration:340,easing:'cubic-bezier(.3,.9,.3,1)'});
+    });
+    var num=$('dayTitle').querySelector('.num');
+    if(num)num.animate([{transform:'translateY(-40%)',opacity:0},{transform:'none',opacity:1}],{duration:260,easing:'cubic-bezier(.2,0,0,1)'});
+  }
+  if(freshId!=null){var el=list.querySelector('[data-id="'+freshId+'"]');if(el){el.classList.add('fresh');var lt=list.getBoundingClientRect(),r=el.getBoundingClientRect();if(r.bottom>lt.bottom||r.top<lt.top)list.scrollTo({top:list.scrollTop+r.top-lt.top-40,behavior:reduce?'auto':'smooth'});}}
+}
+$('list').addEventListener('click',function(e){
+  var b=e.target.closest('.chk');if(!b)return;
+  var row=b.closest('.row'),t=tasks.find(function(x){return String(x.id)===row.dataset.id;});if(!t||row.dataset.busy)return;
+  if(!t.done){
+    row.dataset.busy=1;row.classList.add('done');
+    setTimeout(function(){t.done=true;moveToEnd(t);render(true);showToast(L.doneToast(t.title),function(){t.done=false;render(true);});},reduce?0:560);
+  }else{t.done=false;render(true);}
+});
+function moveToEnd(t){tasks.splice(tasks.indexOf(t),1);tasks.push(t);}
+
+/* quick add parsing */
+function parse(s){
+  var r={title:s,work:false,key:false,est:0,tomorrow:false};
+  var m=s.match(/(^|\s)(\d+(?:\.\d+)?)\s*(m|min|mins|分钟|分)(?=\s|$)/i);
+  if(m){r.est=Math.round(+m[2]);s=s.replace(m[0],' ');}
+  m=s.match(/(^|\s)(\d+(?:\.\d+)?)\s*(h|hr|hrs|小时)(?=\s|$)/i);
+  if(m){r.est=Math.round(+m[2]*60);s=s.replace(m[0],' ');}
+  if(/(^|\s)#(工作|work)(?=\s|$)/i.test(s)){r.work=true;s=s.replace(/(^|\s)#(工作|work)(?=\s|$)/ig,' ');}
+  s=s.replace(/(^|\s)#(生活|life)(?=\s|$)/ig,' ');
+  if(/(^|\s)(#关键|#key|!|！)(?=\s|$)/i.test(s)){r.key=true;s=s.replace(/(^|\s)(#关键|#key|!|！)(?=\s|$)/ig,' ');}
+  if(/(^|\s)(明天|tmr|tomorrow)(?=\s|$)/i.test(s)){r.tomorrow=true;s=s.replace(/(^|\s)(明天|tmr|tomorrow)(?=\s|$)/ig,' ');}
+  s=s.replace(/(^|\s)(今天|today)(?=\s|$)/ig,' ');
+  r.title=s.replace(/\s+/g,' ').trim();
+  return r;
+}
+var input=$('addInput');
+input.addEventListener('input',function(){
+  var v=input.value.trim(),p=parse(v),c='';
+  $('addBtn').classList.toggle('ready',!!p.title);
+  if(p.tomorrow)c+='<span class="chip">'+esc(L.tomorrow)+'</span>';
+  if(p.est)c+='<span class="chip">'+esc(L.est(p.est))+'</span>';
+  if(p.work)c+='<span class="chip work">'+esc(L.work)+'</span>';
+  if(p.key)c+='<span class="chip key">'+esc(L.key)+'</span>';
+  $('chips').innerHTML=c;$('chips').classList.toggle('show',!!c);
+});
+$('addForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var p=parse(input.value.trim());if(!p.title)return;
+  input.value='';input.dispatchEvent(new Event('input'));
+  if(p.tomorrow){showToast(L.tomorrowToast(p.title));return;}
+  var t={id:++uid,title:p.title,work:p.work,key:p.key,est:p.est,done:false};
+  var firstDone=tasks.findIndex(function(x){return x.done;});
+  tasks.splice(firstDone<0?tasks.length:firstDone,0,t);
+  render(true,t.id);
+  showToast(L.addedToast(t.title),function(){tasks.splice(tasks.indexOf(t),1);render(true);});
+});
+function showToast(text,undo){
+  $('toastText').textContent=text;lastUndo=undo||null;
+  $('undoBtn').style.display=undo?'':'none';
+  $('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(hideToast,5000);
+}
+function hideToast(){$('toast').classList.remove('show');lastUndo=null;}
+$('undoBtn').addEventListener('click',function(){if(lastUndo){var u=lastUndo;hideToast();u();}});
+$('toast').addEventListener('mouseenter',function(){clearTimeout(toastTimer);});
+$('toast').addEventListener('mouseleave',function(){toastTimer=setTimeout(hideToast,2000);});
+
+function renderCal(){
+  var y=now.getFullYear(),m=now.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),h='';
+  L.calDow.forEach(function(d){h+='<span>'+d+'</span>';});
+  for(var i=0;i<first;i++)h+='<span></span>';
+  for(var d=1;d<=days;d++){var c=d===now.getDate()?'t':((d*7)%11===3?'k':'');h+='<span class="'+c+'">'+d+'</span>';}
+  $('miniCal').innerHTML='<b>'+esc(L.calHead(y,m+1))+'</b><div class="g">'+h+'</div>';
+}
+
+/* ---------- AI demo ---------- */
+var aiStarted=false,aiRun=0;
+function wait(ms){return new Promise(function(r){setTimeout(r,reduce?0:ms);});}
+async function playAI(){
+  var run=++aiRun;aiStarted=true;
+  var txt=$('aiText'),dr=$('aiDrafts'),foot=$('aiFoot'),spark=$('aiSpark');
+  txt.textContent='';dr.innerHTML='';foot.classList.remove('in');
+  var s=L.aiSentence;
+  if(reduce)txt.textContent=s;
+  else for(var i=0;i<s.length;i++){if(run!==aiRun)return;txt.textContent=s.slice(0,i+1);await wait(lang==='zh'?55:24);}
+  await wait(400);if(run!==aiRun)return;
+  spark.classList.add('busy');await wait(900);spark.classList.remove('busy');if(run!==aiRun)return;
+  for(var j=0;j<L.aiDrafts.length;j++){
+    var d=L.aiDrafts[j],el=document.createElement('div');el.className='draft';
+    el.innerHTML='<span class="chk"></span><div><b>'+esc(d[0])+'</b><div class="meta">'+d[1].map(function(c){var cls=(c===L.work||c==='工作')?' work':((c===L.key||c==='关键')?' key':'');return '<span class="chip'+cls+'">'+esc(c)+'</span>';}).join('')+'</div></div>';
+    dr.appendChild(el);void el.offsetWidth;el.classList.add('in');await wait(180);if(run!==aiRun)return;
+  }
+  foot.classList.add('in');
+}
+$('aiReplay').addEventListener('click',playAI);
+new IntersectionObserver(function(es,o){if(es[0].isIntersecting){o.disconnect();playAI();}},{threshold:.45}).observe($('aiDemo'));
+
+/* ---------- Overlay demo ---------- */
+var ovRun=0;
+function ovRow(t){return '<div class="ov-row"><span class="chk">'+svg('i-check')+'</span><span>'+esc(t[0])+'</span><span class="tag'+(t[2]?' late':'')+'">'+esc(t[1])+'</span></div>';}
+function resetOverlay(){
+  ovRun++;
+  $('ovList').innerHTML=L.ovTasks.map(ovRow).join('');
+  $('ovDate').textContent=L.sub(now.getMonth()+1,now.getDate())+' · '+L.dow[now.getDay()];
+  $('ovAddText').textContent=L.ovPh;$('ovAdd').classList.remove('focus');
+  $('ov').classList.remove('closed');$('ball').classList.remove('show');
+  $('clock').textContent=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+  if(ovSeen)playOverlay();
+}
+var ovSeen=false;
+async function playOverlay(){
+  var run=++ovRun,ov=$('ov'),ball=$('ball'),keys=$('keys').children;
+  if(reduce)return;
+  while(run===ovRun){
+    await wait(1600);if(run!==ovRun)return;
+    var first=$('ovList').querySelector('.ov-row');
+    if(first){first.classList.add('row','done');first.style.borderBottom='1px solid var(--hair)';}
+    await wait(900);if(run!==ovRun)return;
+    ov.classList.add('closed');ball.textContent=String(L.ovTasks.length-1);ball.classList.add('show');
+    await wait(1400);if(run!==ovRun)return;
+    for(var i=0;i<3;i++){keys[i].classList.add('down');await wait(90);}
+    await wait(160);for(i=0;i<3;i++)keys[i].classList.remove('down');
+    ball.classList.remove('show');ov.classList.remove('closed');
+    $('ovList').innerHTML=L.ovTasks.slice(1).map(ovRow).join('');
+    $('ovAdd').classList.add('focus');$('ovAddText').textContent='';
+    await wait(380);
+    for(i=0;i<L.ovType.length;i++){if(run!==ovRun)return;$('ovAddText').textContent=L.ovType.slice(0,i+1);await wait(lang==='zh'?110:55);}
+    await wait(600);if(run!==ovRun)return;
+    var tt=L.ovType.replace(/\s*\d+m$/,'');
+    $('ovAdd').classList.remove('focus');$('ovAddText').textContent=L.ovPh;
+    var div=document.createElement('div');div.innerHTML=ovRow([tt,'15m',0]);var nr=div.firstChild;
+    $('ovList').appendChild(nr);nr.animate([{opacity:0,transform:'translateY(-4px)',background:'rgba(217,119,87,.12)'},{opacity:1,transform:'none',background:'transparent'}],{duration:900,easing:'cubic-bezier(.2,0,0,1)'});
+    await wait(3200);if(run!==ovRun)return;
+    $('ovList').innerHTML=L.ovTasks.map(ovRow).join('');
+  }
+}
+new IntersectionObserver(function(es,o){if(es[0].isIntersecting){o.disconnect();ovSeen=true;playOverlay();}},{threshold:.4}).observe($('desk'));
+
+applyLang();
+})();
+</script>
+</body>
+</html>
