@@ -15,7 +15,7 @@
 :root{
   --ivory:#FAF9F5; --paper:#F3F1EA; --white:#FFFFFF; --slate:#141413; --clay:#D97757; --clay-deep:#BE5B3C;
   --clay-soft:#E5A68A; --clay-pale:#F2D5C8;
-  --gray700:#3D3D3A; --gray550:#73726C; --gray500:#87867F; --gray450:#B0AEA5; --gray300:#D1CFC5; --gray200:#E8E6DC;
+  --gray700:#3D3D3A; --gray550:#73726C; --gray500:#87867F; --gray450:#B0AEA5; --gray300:#D1CFC5; --gray250:#DEDCD1; --gray200:#E8E6DC;
   --hair:rgba(31,30,29,.13); --hair-strong:rgba(31,30,29,.28);
   --clay-wash:rgba(217,119,87,.10); --work:#4977A2; --work-wash:rgba(73,119,162,.14);
   --serif: Georgia, "Times New Roman", "Songti SC", "Source Han Serif SC", "Noto Serif SC", serif;
@@ -213,6 +213,51 @@ section.feat{padding:90px 0}
 .tile p{margin:8px 0 0;color:var(--gray550);font-size:14.5px}
 .center{text-align:center}
 .center .lede{margin:18px auto 0}
+
+
+/* tile illustrations */
+.art{display:block;width:100%;height:auto;aspect-ratio:2/1;border-radius:16px;background:var(--ivory);margin-bottom:22px;box-shadow:inset 0 0 0 1px rgba(20,19,17,.04)}
+.art *{transform-box:fill-box}
+.art .pap{fill:var(--white)}
+.art .sk{fill:var(--gray250)}
+.art .sk2{fill:var(--gray300)}
+.art .ink{fill:var(--slate)}
+.art .hairs{stroke:var(--gray200);stroke-width:1}
+.art .box{fill:var(--white);stroke:var(--gray300);stroke-width:1.4}
+.art .tk{fill:none;stroke:var(--white);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.art text{font-family:var(--sans);font-size:11px;fill:var(--gray550)}
+.art .mono{font-family:var(--mono);font-size:10.5px}
+.art *{animation-play-state:paused}
+.tile.in .art *{animation-play-state:running}
+/* timeline */
+.a-drag{animation:aDrag 5.5s cubic-bezier(.45,0,.2,1) infinite}
+@keyframes aDrag{0%,16%{transform:translateX(0)}36%,64%{transform:translateX(-37.7px)}84%,100%{transform:translateX(0)}}
+.a-ghost{animation:aGhost 5.5s infinite}
+@keyframes aGhost{0%,18%{opacity:0}26%,62%{opacity:1}70%,100%{opacity:0}}
+/* monthly */
+.a-hl{transform-origin:left center;animation:aHl 5s cubic-bezier(.2,0,0,1) infinite}
+@keyframes aHl{0%,22%{transform:scaleX(0)}38%,100%{transform:scaleX(1)}}
+.a-sw{transform-origin:center;animation:aSw 5s infinite}
+@keyframes aSw{0%,16%{transform:scale(1)}20%{transform:scale(1.35)}26%,100%{transform:scale(1)}}
+.a-ring{animation:aRing 5s infinite}
+@keyframes aRing{0%,16%{opacity:0}20%,90%{opacity:1}100%{opacity:0}}
+.a-bar{animation:aBar 5s infinite}
+@keyframes aBar{0%,6%{opacity:0;transform:translateY(4px)}12%,88%{opacity:1;transform:none}96%,100%{opacity:0;transform:translateY(4px)}}
+.a-caret{animation:aBlink 1s steps(1) infinite}
+@keyframes aBlink{50%{opacity:0}}
+/* keyboard */
+.a-sel{animation:aSel 7s cubic-bezier(.3,.9,.3,1) infinite}
+@keyframes aSel{0%,13%{transform:translateY(0)}16%,29%{transform:translateY(22px)}32%,67%{transform:translateY(44px)}70%,83%{transform:translateY(22px)}86%,100%{transform:translateY(0)}}
+.a-kd{animation:aKd 7s infinite}
+@keyframes aKd{0%,11%{transform:none}12%,15%{transform:translateY(2px)}16%,27%{transform:none}28%,31%{transform:translateY(2px)}32%,100%{transform:none}}
+.a-ku{animation:aKu 7s infinite}
+@keyframes aKu{0%,65%{transform:none}66%,69%{transform:translateY(2px)}70%,81%{transform:none}82%,85%{transform:translateY(2px)}86%,100%{transform:none}}
+.a-ks{animation:aKs 7s infinite}
+@keyframes aKs{0%,45%{transform:none}46%,49%{transform:translateY(2px)}50%,100%{transform:none}}
+.a-kt{animation:aKt 7s infinite}
+@keyframes aKt{0%,47%{opacity:0}48%,94%{opacity:1}96%,100%{opacity:0}}
+.a-strike{transform-origin:left center;animation:aStrike 7s cubic-bezier(.2,0,0,1) infinite}
+@keyframes aStrike{0%,48%{transform:scaleX(0)}53%,94%{transform:scaleX(1)}96%,100%{transform:scaleX(0)}}
 
 /* syntax */
 .syntax{margin-top:44px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hair);border-radius:20px;overflow:hidden;box-shadow:0 0 0 1px var(--hair)}
@@ -449,12 +494,124 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
       <h2 data-i="gTitle">小处也用了心。</h2>
     </div>
     <div class="grid">
-      <div class="tile rv"><div class="ico"><svg><use href="#i-list"/></svg></div><h3 data-i="g1t">全部待办 · 时间线</h3><p data-i="g1p">所有事情按日期排成一条线。拖动中间改日期，拖两端改起止，松手后 5 秒内可以撤销。</p></div>
-      <div class="tile rv"><div class="ico"><svg><use href="#i-book"/></svg></div><h3 data-i="g2t">月度规划</h3><p data-i="g2p">每个月一页记事纸，打开就能写，自动保存。可以加粗、用五种颜色划重点、写圆点列表。</p></div>
-      <div class="tile rv"><div class="ico"><svg><use href="#i-compass"/></svg></div><h3 data-i="g3t">多设备同步</h3><p data-i="g3p">用 Google 账号登录，Mac、iPhone、iPad 看到同一份清单。断网照常用，联网后自动补上。</p></div>
-      <div class="tile rv"><div class="ico"><svg viewBox="0 0 20 20"><rect x="2.5" y="5" width="15" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 8h1M9.5 8h1M13.5 8h1M6 12h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><h3 data-i="g4t">键盘就能做完</h3><p data-i="g4p">↑↓ 选择，空格勾掉，↩ 编辑，⌘Z 撤销刚才的改动；⌘1 到 ⌘3 切换页面，⌘N 新建。</p></div>
-      <div class="tile rv"><div class="ico"><svg viewBox="0 0 20 20"><path d="M3 10c2.5-4 4.5-4 7 0s4.5 4 7 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div><h3 data-i="g5t">手感</h3><p data-i="g5p">勾选、补位、切页都有短而准的动效，不拖沓也不生硬。系统开启「减少动态效果」时会自动收敛。</p></div>
-      <div class="tile rv"><div class="ico"><svg viewBox="0 0 20 20"><path d="M7 7l-3.5 3L7 13M13 7l3.5 3L13 13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 data-i="g6t">给脚本的入口</h3><p data-i="g6p">用 <code style="font-family:var(--mono);font-size:13px">qingdan://</code> 链接添加、修改、完成待办，方便接上快捷指令和你自己的自动化。</p></div>
+      <div class="tile rv"><svg class="art" viewBox="0 0 300 150" aria-hidden="true">
+<g class="hairs"><line x1="55.7" y1="34" x2="55.7" y2="140"/><line x1="93.4" y1="34" x2="93.4" y2="140"/><line x1="131.1" y1="34" x2="131.1" y2="140"/><line x1="168.8" y1="34" x2="168.8" y2="140"/><line x1="206.5" y1="34" x2="206.5" y2="140"/><line x1="244.2" y1="34" x2="244.2" y2="140"/></g>
+<circle cx="150" cy="20" r="10" class="ink"/>
+<g text-anchor="middle"><text x="36.9" y="24">14</text><text x="74.6" y="24">15</text><text x="112.3" y="24">16</text><text x="150" y="24" style="fill:var(--ivory);font-weight:600">17</text><text x="187.7" y="24">18</text><text x="225.4" y="24">19</text><text x="263.1" y="24">20</text></g>
+<line x1="150" y1="36" x2="150" y2="142" stroke="var(--clay)" stroke-width="1.5" opacity=".55"/>
+<rect x="21" y="44" width="107" height="22" rx="7" fill="var(--work-wash)"/><rect x="31" y="53.5" width="58" height="3" rx="1.5" fill="var(--work)" opacity=".7"/>
+<rect x="96.4" y="74" width="69.4" height="22" rx="7" fill="var(--clay-wash)"/><rect x="106" y="83.5" width="36" height="3" rx="1.5" fill="var(--clay-deep)" opacity=".7"/>
+<rect class="a-ghost" x="171.8" y="104" width="69.4" height="22" rx="7" fill="none" stroke="var(--gray450)" stroke-width="1.2" stroke-dasharray="3 3"/>
+<g class="a-drag">
+ <rect x="171.8" y="104" width="69.4" height="22" rx="7" class="pap" stroke="var(--hair-strong)" stroke-width="1" style="filter:drop-shadow(0 3px 6px rgba(20,19,17,.12))"/>
+ <rect x="176" y="110" width="2" height="10" rx="1" class="sk2"/><rect x="235" y="110" width="2" height="10" rx="1" class="sk2"/>
+ <rect x="184" y="113.5" width="34" height="3" rx="1.5" fill="var(--gray450)"/>
+ <path d="M206 116 l0 15 l4 -4 l3 6 l2.5 -1.2 l-3 -6 l5.5 0 z" class="ink" stroke="var(--white)" stroke-width="1.2" stroke-linejoin="round"/>
+</g>
+</svg><h3 data-i="g1t">全部待办 · 时间线</h3><p data-i="g1p">所有事情按日期排成一条线。拖动中间改日期，拖两端改起止，松手后 5 秒内可以撤销。</p></div>
+      <div class="tile rv"><svg class="art" viewBox="0 0 300 150" aria-hidden="true">
+<rect x="58" y="12" width="184" height="128" rx="10" class="pap" style="filter:drop-shadow(0 4px 10px rgba(20,19,17,.07))"/>
+<text x="74" y="40" style="font-family:var(--serif);font-size:22px;fill:var(--slate)">11</text>
+<rect x="74" y="54" width="140" height="5" rx="2.5" class="sk"/>
+<rect class="a-hl" x="71" y="65" width="102" height="13" rx="3" fill="#F5D77A" opacity=".75"/>
+<rect x="74" y="69" width="96" height="5" rx="2.5" class="sk2"/><rect x="176" y="69" width="34" height="5" rx="2.5" class="sk"/>
+<rect x="74" y="84" width="86" height="6" rx="3" fill="var(--gray700)"/>
+<circle cx="77" cy="103.5" r="2.2" class="ink"/><rect x="86" y="101" width="104" height="5" rx="2.5" class="sk"/>
+<rect x="83" y="113" width="70" height="13" rx="3" fill="var(--clay-pale)"/>
+<circle cx="77" cy="119.5" r="2.2" class="ink"/><rect x="86" y="117" width="62" height="5" rx="2.5" class="sk2"/>
+<rect class="a-caret" x="152" y="114" width="1.5" height="11" fill="var(--clay)"/>
+<g class="a-bar">
+ <rect x="150" y="32" width="122" height="26" rx="13" class="ink" style="filter:drop-shadow(0 4px 10px rgba(20,19,17,.2))"/>
+ <text x="163" y="49" style="fill:var(--ivory);font-weight:700;font-size:12px">B</text>
+ <line x1="176" y1="38" x2="176" y2="52" stroke="rgba(250,249,245,.25)"/>
+ <circle class="a-ring" cx="190" cy="45" r="7.5" fill="none" stroke="var(--ivory)" stroke-width="1.2"/>
+ <circle class="a-sw" cx="190" cy="45" r="5" fill="#F5D77A"/><circle cx="206" cy="45" r="5" fill="#A9D3A0"/><circle cx="222" cy="45" r="5" fill="#A8C8EA"/><circle cx="238" cy="45" r="5" fill="#F0B4C4"/><circle cx="254" cy="45" r="5" fill="var(--clay-soft)"/>
+</g>
+</svg><h3 data-i="g2t">月度规划</h3><p data-i="g2p">每个月一页记事纸，打开就能写，自动保存。可以加粗、用五种颜色划重点、写圆点列表。</p></div>
+      <div class="tile rv"><svg class="art a-smil" viewBox="0 0 300 150" aria-hidden="true">
+<rect x="26" y="24" width="128" height="84" rx="7" class="box"/>
+<rect x="12" y="108" width="156" height="7" rx="3.5" class="sk2"/>
+<rect x="38" y="40" width="10" height="10" rx="3" class="box"/><rect x="56" y="43" width="70" height="4" rx="2" class="sk2"/>
+<rect x="38" y="60" width="10" height="10" rx="3" class="box"/><rect x="56" y="63" width="54" height="4" rx="2" class="sk"/>
+<rect x="38" y="80" width="10" height="10" rx="3" class="box"/><rect x="56" y="83" width="62" height="4" rx="2" class="sk"/>
+<g opacity="0"><rect x="38" y="40" width="10" height="10" rx="3" class="ink"/><path d="M40.6 45.2l1.8 1.8 3.4-3.6" class="tk" style="stroke-width:1.6"/>
+ <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.12;0.14;0.9;0.94;1" dur="4.5s" repeatCount="indefinite"/></g>
+<rect x="214" y="18" width="58" height="112" rx="12" class="box"/>
+<rect x="233" y="24" width="20" height="5" rx="2.5" class="ink"/>
+<rect x="222" y="42" width="9" height="9" rx="2.8" class="box"/><rect x="236" y="45" width="28" height="3.5" rx="1.75" class="sk2"/>
+<rect x="222" y="60" width="9" height="9" rx="2.8" class="box"/><rect x="236" y="63" width="22" height="3.5" rx="1.75" class="sk"/>
+<rect x="222" y="78" width="9" height="9" rx="2.8" class="box"/><rect x="236" y="81" width="25" height="3.5" rx="1.75" class="sk"/>
+<g opacity="0"><rect x="222" y="42" width="9" height="9" rx="2.8" class="ink"/><path d="M224.4 46.7l1.6 1.6 3-3.2" class="tk" style="stroke-width:1.5"/>
+ <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.47;0.49;0.9;0.94;1" dur="4.5s" repeatCount="indefinite"/></g>
+<path id="syArc" d="M150 30 C 168 2, 196 2, 214 30" fill="none" stroke="var(--gray450)" stroke-width="1.3" stroke-dasharray="2 4" stroke-linecap="round"/>
+<circle r="4" fill="var(--clay)" opacity="0">
+ <animateMotion dur="4.5s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.16;0.46;1" calcMode="linear"><mpath href="#syArc"/></animateMotion>
+ <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.15;0.17;0.45;0.48;1" dur="4.5s" repeatCount="indefinite"/>
+</circle>
+</svg><h3 data-i="g3t">多设备同步</h3><p data-i="g3p">用 Google 账号登录，Mac、iPhone、iPad 看到同一份清单。断网照常用，联网后自动补上。</p></div>
+      <div class="tile rv"><svg class="art" viewBox="0 0 300 150" aria-hidden="true">
+<rect x="40" y="10" width="220" height="74" rx="10" class="pap" style="filter:drop-shadow(0 3px 8px rgba(20,19,17,.06))"/>
+<rect class="a-sel" x="46" y="14" width="208" height="22" rx="6" fill="var(--clay-wash)" stroke="var(--clay)" stroke-opacity=".35"/>
+<rect x="56" y="20" width="10" height="10" rx="3" class="box"/><rect x="74" y="23" width="92" height="4" rx="2" class="sk2"/>
+<rect x="56" y="42" width="10" height="10" rx="3" class="box"/><rect x="74" y="45" width="70" height="4" rx="2" class="sk2"/>
+<rect x="56" y="64" width="10" height="10" rx="3" class="box"/><rect x="74" y="67" width="80" height="4" rx="2" class="sk2"/>
+<g class="a-kt"><rect x="56" y="64" width="10" height="10" rx="3" class="ink"/><path d="M58.6 69.2l1.8 1.8 3.4-3.6" class="tk" style="stroke-width:1.6"/></g>
+<rect class="a-strike" x="72" y="68.4" width="84" height="1.3" fill="var(--gray500)"/>
+<g text-anchor="middle" style="font-size:14px">
+ <rect x="58" y="104" width="36" height="32" rx="7" class="sk2"/><g class="a-ku"><rect x="58" y="100" width="36" height="32" rx="7" class="box"/><text x="76" y="121" style="font-size:14px;fill:var(--slate)">↑</text></g>
+ <rect x="100" y="104" width="36" height="32" rx="7" class="sk2"/><g class="a-kd"><rect x="100" y="100" width="36" height="32" rx="7" class="box"/><text x="118" y="121" style="font-size:14px;fill:var(--slate)">↓</text></g>
+ <rect x="142" y="104" width="70" height="32" rx="7" class="sk2"/><g class="a-ks"><rect x="142" y="100" width="70" height="32" rx="7" class="box"/><text x="177" y="120" style="font-size:11px;fill:var(--slate)">space</text></g>
+ <rect x="218" y="104" width="36" height="32" rx="7" class="sk2"/><g><rect x="218" y="100" width="36" height="32" rx="7" class="box"/><text x="236" y="121" style="font-size:14px;fill:var(--slate)">↩</text></g>
+</g>
+</svg><h3 data-i="g4t">键盘就能做完</h3><p data-i="g4p">↑↓ 选择，空格勾掉，↩ 编辑，⌘Z 撤销刚才的改动；⌘1 到 ⌘3 切换页面，⌘N 新建。</p></div>
+      <div class="tile rv"><svg class="art a-smil" viewBox="0 0 300 150" aria-hidden="true">
+<line x1="28" y1="128" x2="176" y2="128" stroke="var(--gray300)" stroke-width="1.2"/>
+<line x1="28" y1="22" x2="28" y2="128" stroke="var(--gray300)" stroke-width="1.2"/>
+<line x1="28" y1="42" x2="176" y2="42" stroke="var(--gray300)" stroke-width="1" stroke-dasharray="3 4"/>
+<path id="feCurve" d="M30 120 C 62 120, 74 30, 100 34 S 132 44, 172 42" fill="none" stroke="var(--gray250)" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M30 120 C 62 120, 74 30, 100 34 S 132 44, 172 42" pathLength="100" fill="none" stroke="var(--clay)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="100" stroke-dashoffset="100">
+ <animate attributeName="stroke-dashoffset" values="100;100;0;0;100" keyTimes="0;0.1;0.48;0.9;1" dur="3.6s" repeatCount="indefinite"/>
+</path>
+<circle r="5" fill="var(--clay)" stroke="var(--white)" stroke-width="2">
+ <animateMotion dur="3.6s" repeatCount="indefinite" keyPoints="0;0;1;1;0" keyTimes="0;0.1;0.48;0.9;1" calcMode="linear"><mpath href="#feCurve"/></animateMotion>
+</circle>
+<g transform="translate(236 66)"><g>
+ <animateTransform attributeName="transform" type="scale" values="1;1;0.84;1.07;0.98;1;1" keyTimes="0;0.44;0.48;0.55;0.62;0.68;1" dur="3.6s" repeatCount="indefinite"/>
+ <rect x="-24" y="-24" width="48" height="48" rx="13" fill="var(--white)" stroke="var(--gray300)" stroke-width="2">
+  <animate attributeName="fill" values="#FFFFFF;#FFFFFF;#141413;#141413;#FFFFFF" keyTimes="0;0.47;0.49;0.9;1" dur="3.6s" repeatCount="indefinite"/>
+  <animate attributeName="stroke" values="#D1CFC5;#D1CFC5;#141413;#141413;#D1CFC5" keyTimes="0;0.47;0.49;0.9;1" dur="3.6s" repeatCount="indefinite"/>
+ </rect>
+ <path d="M-10 1 l7 7 l13 -14" pathLength="100" class="tk" style="stroke-width:4.5" stroke-dasharray="100" stroke-dashoffset="100">
+  <animate attributeName="stroke-dashoffset" values="100;100;0;0;100" keyTimes="0;0.49;0.6;0.9;1" dur="3.6s" repeatCount="indefinite"/>
+ </path>
+</g></g>
+<rect x="206" y="108" width="60" height="5" rx="2.5" class="sk2"/>
+<rect x="203" y="109.8" width="66" height="1.4" fill="var(--gray500)" opacity="0">
+ <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.55;0.6;0.9;1" dur="3.6s" repeatCount="indefinite"/>
+</rect>
+</svg><h3 data-i="g5t">手感</h3><p data-i="g5p">勾选、补位、切页都有短而准的动效，不拖沓也不生硬。系统开启「减少动态效果」时会自动收敛。</p></div>
+      <div class="tile rv"><svg class="art a-smil" viewBox="0 0 300 150" aria-hidden="true">
+<defs><clipPath id="scType"><rect x="24" y="22" width="0" height="46">
+ <animate attributeName="width" values="0;0;250;250;0" keyTimes="0;0.05;0.4;0.92;1" dur="5.5s" repeatCount="indefinite"/></rect></clipPath></defs>
+<rect x="14" y="14" width="272" height="60" rx="10" class="ink"/>
+<g clip-path="url(#scType)" class="mono">
+ <text x="26" y="38" class="mono" style="fill:rgba(250,249,245,.55)">$ open -g "<tspan style="fill:var(--clay-soft)">qingdan://add</tspan><tspan style="fill:var(--ivory)">?title=…</tspan></text>
+ <text x="26" y="58" class="mono" style="fill:var(--ivory)">&amp;estimate=30&amp;category=key"</text>
+</g>
+<path d="M150 80 v10 m-4 -4 l4 4 l4 -4" fill="none" stroke="var(--gray450)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0">
+ <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.42;0.46;0.92;1" dur="5.5s" repeatCount="indefinite"/></path>
+<g opacity="0">
+ <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.48;0.53;0.92;1" dur="5.5s" repeatCount="indefinite"/>
+ <animateTransform attributeName="transform" type="translate" values="0 -6;0 -6;0 0;0 0;0 -6" keyTimes="0;0.48;0.56;0.92;1" dur="5.5s" repeatCount="indefinite"/>
+ <rect x="50" y="98" width="200" height="38" rx="10" class="pap" style="filter:drop-shadow(0 3px 8px rgba(20,19,17,.08))"/>
+ <rect x="50" y="98" width="200" height="38" rx="10" fill="var(--clay)" opacity="0">
+  <animate attributeName="opacity" values="0;0;0.12;0;0" keyTimes="0;0.5;0.55;0.75;1" dur="5.5s" repeatCount="indefinite"/></rect>
+ <rect x="64" y="111.5" width="11" height="11" rx="3.4" class="box"/>
+ <path d="M86 114 l1.6 3.4 3.7 .4 -2.8 2.5 .8 3.6 -3.3 -1.9 -3.3 1.9 .8 -3.6 -2.8 -2.5 3.7 -.4z" fill="var(--clay)" transform="translate(0 -1)"/>
+ <rect x="98" y="115" width="84" height="4.5" rx="2.25" class="sk2"/>
+ <rect x="196" y="109" width="40" height="16" rx="8" class="sk"/><text x="216" y="120.5" text-anchor="middle" style="font-size:10px;fill:var(--gray700)">30m</text>
+</g>
+</svg><h3 data-i="g6t">给脚本的入口</h3><p data-i="g6p">用 <code style="font-family:var(--mono);font-size:13px">qingdan://</code> 链接添加、修改、完成待办，方便接上快捷指令和你自己的自动化。</p></div>
     </div>
 
     <div class="syntax rv">
@@ -864,6 +1021,12 @@ async function playOverlay(){
   }
 }
 new IntersectionObserver(function(es,o){if(es[0].isIntersecting){o.disconnect();ovSeen=true;playOverlay();}},{threshold:.4}).observe($('desk'));
+
+document.querySelectorAll('svg.a-smil').forEach(function(sv){
+  sv.pauseAnimations();
+  if(reduce)return;
+  new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)sv.unpauseAnimations();else sv.pauseAnimations();});}).observe(sv);
+});
 
 applyLang();
 })();
